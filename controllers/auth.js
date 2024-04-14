@@ -30,12 +30,13 @@ const sendTokenResponse = (user, statusCode, res) => {
 exports.register = async (req, res, next) => {
   //   res.status(200).json({ success: true });
   try {
-    const { name, telephone_number, email, password, role } = req.body;
+    const { name, telephone_number, email, username, password, role } = req.body;
 
     const user = await User.create({
       name,
       telephone_number,
       email,
+      username,
       password,
       role,
     });
@@ -54,18 +55,18 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res
         .status(400)
         .json({
           success: false, 
-          message: "Please provide an email and password"
+          message: "Please provide both username and password"
         });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ username }).select("+password");
 
     if (!user) {
       return res
@@ -93,7 +94,7 @@ exports.login = async (req, res, next) => {
       .status(401)
       .json({
         success: false,
-        message: "Cannot convert email or password to string",
+        message: "Error occurred while trying to login",
       });
   }
 };
