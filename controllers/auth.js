@@ -73,18 +73,24 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !password) {
+    if ((!username && !email) || !password) {
       return res
         .status(400)
         .json({
           success: false, 
-          message: "Please provide both username and password"
+          message: "Please provide either username or email, and password"
         });
     }
 
-    const user = await User.findOne({ username }).select("+password");
+    let user;
+
+    if (email) {
+      user = await User.findOne({ email }).select("+password");
+    } else {
+      user = await User.findOne({ username }).select("+password");
+    }
 
     if (!user) {
       return res
@@ -108,6 +114,7 @@ exports.login = async (req, res, next) => {
 
     sendTokenResponse(user, 200, res);
   } catch (err) {
+    console.log(err);
     return res
       .status(401)
       .json({
