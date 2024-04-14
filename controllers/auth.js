@@ -42,14 +42,32 @@ exports.register = async (req, res, next) => {
     });
     sendTokenResponse(user, 200, res);
   } catch (err) {
-    console.log(err.stack);
-    const firstError = Object.keys(err.errors)[0];
-    return res
-      .status(400)
-      .json({
-        success: false,
-        reason: err.errors[firstError].message
-      });
+    console.log(err.toString());
+      if (err.toString().indexOf('duplicate') != -1) {
+        const dup_key = err.toString().indexOf(`username: "${req.body.username}"`) != -1 ? 'username' : 
+        err.toString().indexOf(`email: "${req.body.email}"`) != -1 ? 'email' : 'telephone number';
+        return res
+          .status(400)
+          .json({
+            success: false,
+            reason: `The ${dup_key} entered has already been used`, 
+          });
+      }
+      const firstError = Object.keys(err.errors)[0];
+      if (firstError) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            reason: err.errors[firstError].message, 
+          });
+      }
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: 'Error occurred while trying to register',
+        })
   }
 };
 

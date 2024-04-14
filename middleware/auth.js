@@ -41,11 +41,11 @@ exports.authorize = (...roles) => {
         .status(403)
         .json({
           success: false,
-          message: `User role ${req.user.solr} is not authorized to access this route`,
+          message: `User with role ${req.user.role} is not authorized to access this route`,
         });
     }
 
-    
+
 
     next();
   };
