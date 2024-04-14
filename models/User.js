@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema({
         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pwd);
       },
       message: (props) =>
-        `${props.value} is not a valid password. The password must contain at least one uppercase letter, one lowercase letter, and one digit.`,
+        `THe entered password is not valid. The password must contain at least one uppercase letter, one lowercase letter, and one digit.`,
     },
   },
   resetPasswordToken: String,

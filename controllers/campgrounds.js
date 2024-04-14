@@ -53,11 +53,40 @@ exports.getCampground = async (req, res, next) => {
 };
 
 exports.createCampground = async (req, res, next) => {
-  const campground = await Campground.create(req.body);
-  res.status(201).json({
-    success: true,
-    message: "Campground created successfully",
-  });
+  try {
+    const { name, address, road, subdistrict, district, province, postalcode, telephone_number } = req.body;
+    const campground = await Campground.create({
+      name,
+      address,
+      road,
+      subdistrict,
+      district,
+      province,
+      postalcode,
+      telephone_number
+    });
+    console.log(campground)
+    res.status(201).json({
+      success: true,
+      message: "Campground created successfully",
+    });
+  } catch (err) {
+      console.log(err.toString());
+      if (err.toString().indexOf('duplicate') != -1) {
+        const dup_key = err.toString().indexOf(`name: "${req.body.name}"`) != -1 ? 'name' : 'telephone number';
+        return res.status(400).json({
+          success: false,
+          reason: `The ${dup_key} entered has already been used.`, 
+        });
+      }
+      const firstError = Object.keys(err.errors)[0];
+      if (firstError) {
+        return res.status(400).json({
+          success: false,
+          reason: err.errors[firstError].message, 
+        });
+      }
+  }
 };
 
 exports.updateCampground = async (req, res, next) => {

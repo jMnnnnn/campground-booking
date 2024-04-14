@@ -14,11 +14,11 @@ const { protect, authorize } = require("../middleware/auth");
 // router.route("/").post(protect, createCampground);
 router
   .route("/")
-  .get(getCampgrounds)
+  .get(protect, getCampgrounds)
   .post(protect, authorize("admin"), createCampground);
 router
   .route("/:id")
-  .get(getCampground)
+  .get(protect, getCampground)
   .put(protect, authorize("admin"), updateCampground)
   .delete(protect, authorize("admin"), deleteCampground);
 

@@ -38,10 +38,12 @@ exports.register = async (req, res, next) => {
     });
     sendTokenResponse(user, 200, res);
   } catch (err) {
-    res.status(400).json({
-      success: false,
-    });
     console.log(err.stack);
+    const firstError = Object.keys(err.errors)[0];
+    return res.status(400).json({
+      success: false,
+      reason: err.errors[firstError].message
+    });
   }
 };
 
