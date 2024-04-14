@@ -12,16 +12,19 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
-  res.status(statusCode).cookie("token", token, options).json({
-    success: true,
-    // //add for frontend
-    // _id: user._id,
-    // name: user.name,
-    // telephone_number: user.telephone_number,
-    // email: user.email,
-    // //end for frontend
-    token,
-  });
+  return res
+    .status(statusCode)
+    .cookie("token", token, options)
+    .json({
+      success: true,
+      // //add for frontend
+      // _id: user._id,
+      // name: user.name,
+      // telephone_number: user.telephone_number,
+      // email: user.email,
+      // //end for frontend
+      token,
+    });
 };
 
 exports.register = async (req, res, next) => {
@@ -40,10 +43,12 @@ exports.register = async (req, res, next) => {
   } catch (err) {
     console.log(err.stack);
     const firstError = Object.keys(err.errors)[0];
-    return res.status(400).json({
-      success: false,
-      reason: err.errors[firstError].message
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        reason: err.errors[firstError].message
+      });
   }
 };
 
@@ -54,7 +59,10 @@ exports.login = async (req, res, next) => {
     if (!email || !password) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please provide an email and password" });
+        .json({
+          success: false, 
+          message: "Please provide an email and password"
+        });
     }
 
     const user = await User.findOne({ email }).select("+password");
@@ -62,7 +70,10 @@ exports.login = async (req, res, next) => {
     if (!user) {
       return res
         .status(401)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ 
+          success: false, 
+          msg: "Invalid credentials" 
+        });
     }
 
     const isMatch = await user.matchPassword(password);
@@ -70,15 +81,20 @@ exports.login = async (req, res, next) => {
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ 
+          success: false, 
+          msg: "Invalid credentials" 
+        });
     }
 
     sendTokenResponse(user, 200, res);
   } catch (err) {
-    return res.status(401).json({
-      success: false,
-      msg: "Cannot convert email or password to string",
-    });
+    return res
+      .status(401)
+      .json({
+        success: false,
+        message: "Cannot convert email or password to string",
+      });
   }
 };
 
@@ -87,13 +103,21 @@ exports.logout = async (req, res, next) => {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
-  res.status(200).json({ success: true, data: {} });
+  return res
+    .status(200)
+    .json({
+      success: true, 
+      data: {}, 
+      message: 'Logout successfully',
+    });
 };
 
 exports.getCurrentUser = async (req, res, next) => {
   const user = await User.findById(req.user.id);
-  res.status(200).json({
-    success: true,
-    data: user,
-  });
+  return res
+    .status(200)
+    .json({
+      success: true,
+      data: user,
+    });
 };
