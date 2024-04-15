@@ -25,14 +25,35 @@ const BookingSchema = new mongoose.Schema({
     }
 });
 
-// Each booking cannot be longer than 3 nights
-BookingSchema.path("booking_end_date").validate(function(value) {
+const validateNights = function (startDate, endDate) {
     const oneDay = 24 * 60 * 60 * 1000;
-    const startDate = this.booking_start_date.getTime();
-    const endDate = value.getTime();
     const number_of_nights = Math.round((endDate - startDate) / oneDay);
 
     return number_of_nights <= 3;
-}, 'Booking is only allowed for up to 3 nights')
+}
 
-module.exports = mongoose.model("Booking", BookingSchema);
+// Each booking cannot be longer than 3 nights
+BookingSchema.path("booking_start_date").validate({
+    validator: function(value) {
+        const startDate = value.getTime();
+        const endDate = this.get("booking_end_date").getTime();
+        return validateNights(startDate, endDate)
+    },
+   message: 'Booking is only allowed for up to 3 nights', 
+});
+
+BookingSchema.path("booking_end_date").validate({
+    validator: function(value) {
+        const startDate = this.get("booking_start_date").getTime();
+        const endDate = value.getTime();
+        return validateNights(startDate, endDate)
+    },
+   message: 'Booking is only allowed for up to 3 nights', 
+});
+
+const Booking = mongoose.model("Booking", BookingSchema);
+
+module.exports = {
+    Booking,
+    validateNights
+};

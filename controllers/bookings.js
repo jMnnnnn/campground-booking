@@ -1,5 +1,6 @@
-const Booking = require("../models/Booking");
+const { Booking, validateNights } = require("../models/Booking");
 const Campground = require("../models/Campground");
+const User = require("../models/User");
 
 exports.getBookings = async (req, res, next) => {
   let query;
@@ -43,11 +44,12 @@ exports.getBooking = async (req, res, next) => {
       booking.booking_user.toString() !== req.user.id &&
       req.user.role !== "admin"
     ) {
+      const user = await User.findById(req.user.id).select("username");
       return res
         .status(401)
         .json({
           success: false,
-          message: `User with ID ${req.user.id} is not authorized to view this booking`,
+          message: `${user.username} is not authorized to view this booking`,
         });
     }
     return res
@@ -69,7 +71,21 @@ exports.getBooking = async (req, res, next) => {
 
 exports.addBooking = async (req, res, next) => {
   try {
-    req.params.campgroundId = req.body.booked_campground;
+    if (req.body.booked_campground_name) {
+      const campground_name = req.body.booked_campground_name.toString();
+      console.log(campground_name);
+      const campground_by_name = await Campground.findOne({ name: campground_name }).select('_id');
+      console.log(campground_by_name)
+      req.body = {
+        ...req.body,
+        "booked_campground": campground_by_name._id,
+      };
+      console.log(req.body)
+      req.params.campgroundId = campground_by_name._id;
+
+    } else {
+      req.params.campgroundId = req.body.booked_campground;
+    }
     const campground = await Campground.findById(req.params.campgroundId);
     if (!campground) {
       return res
@@ -83,11 +99,12 @@ exports.addBooking = async (req, res, next) => {
     req.body.booking_user = req.user.id;
     const existedBookings = await Booking.find({ booking_user: req.user.id });
     if (existedBookings.length >= 3 && req.user.role !== "admin") {
+      const user = await User.findById(req.body.booking_user).select("username");
       return res
         .status(400)
         .json({
           success: false,
-          message: `The user with ID ${req.user.id} has already made 3 bookings.`,
+          message: `${user.username} has already made 3 bookings.`,
       });
     }
 
@@ -99,7 +116,15 @@ exports.addBooking = async (req, res, next) => {
         data: booking,
       });
   } catch (err) {
-    console.log(err);
+    console.log(err.toString());
+    if (err.toString().indexOf("Booking is only allowed for up to 3 nights") != -1) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          reason: "Booking is only allowed for up to 3 nights",
+        })
+    }
     return res
       .status(400)
       .json({
@@ -125,17 +150,33 @@ exports.updateBooking = async (req, res, next) => {
       booking.booking_user.toString() !== req.user.id &&
       req.user.role !== "admin"
     ) {
+      const user = await User.findById(req.user.id).select("username");
       return res
         .status(401)
         .json({
           success: false,
-          message: `User with ID ${req.user.id} is not authorized to update this booking`,
+          message: `${user.username} is not authorized to update this booking`,
       });
     }
 
+    console.log(`time: ${new Date(req.body.booking_end_date).getTime()}`)
+    if ((req.body.booking_start_date && req.body.booking_end_date 
+      && !validateNights(new Date(req.body.booking_start_date).getTime(), new Date(req.body.booking_end_date).getTime())) ||
+    (req.body.booking_start_date && !req.body.booking_end_date 
+      && !validateNights(new Date(req.body.booking_start_date).getTime(), booking.booking_end_date.getTime())) ||
+    (!req.body.booking_start_date && req.body.booking_end_date 
+      && !validateNights(booking.booking_start_date.getTime(), new Date(req.body.booking_end_date).getTime()))) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            reason: "Booking is only allowed for up to 3 nights",
+          });
+      }
+
     booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true,
+      // runValidators: true,
     });
     return res
       .status(200)
@@ -145,6 +186,15 @@ exports.updateBooking = async (req, res, next) => {
       });
   } catch (err) {
     console.log(err);
+    if (err.toString().indexOf("ValidationError: booking_end_date") != -1) {
+      const error_message = err.toString().split(': ')[2]; 
+      return res
+        .status(400)
+        .json({
+          success: false,
+          reason: error_message,
+        })
+    }
     return res
       .status(400)
       .json({
@@ -169,11 +219,12 @@ exports.deleteBooking = async (req, res, next) => {
       booking.booking_user.toString() !== req.user.id &&
       req.user.role !== "admin"
     ) {
+      const user = await User.findById(req.user.id).select("username");
       return res
         .status(401)
         .json({
           success: false,
-          message: `User with ID ${req.user.id} is not authorized to delete this booking`,
+          message: `${user.username} is not authorized to delete this booking`,
         });
     }
 
