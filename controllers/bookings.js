@@ -125,6 +125,14 @@ exports.addBooking = async (req, res, next) => {
           reason: "Booking is only allowed for up to 3 nights",
         })
     }
+    if (err == dateError) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          reason: "Invalid start and end booking date",
+        })
+    }
     return res
       .status(400)
       .json({
@@ -193,6 +201,14 @@ exports.updateBooking = async (req, res, next) => {
         .json({
           success: false,
           reason: error_message,
+        })
+    }
+    if (err == "dateError") {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          reason: "Invalid start and end booking date",
         })
     }
     return res

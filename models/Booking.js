@@ -26,6 +26,7 @@ const BookingSchema = new mongoose.Schema({
 });
 
 const validateNights = function (startDate, endDate) {
+    if (startDate >= endDate) throw "dateError";
     const oneDay = 24 * 60 * 60 * 1000;
     const number_of_nights = Math.round((endDate - startDate) / oneDay);
 
