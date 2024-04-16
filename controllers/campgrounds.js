@@ -231,18 +231,41 @@ exports.getBookmarkCampgrounds = async (req, res, next) => {
 
 exports.addBookmarkCampground = async (req, res, next) => {
   try {
-    req.params.campgroundId = req.body.campground;
+    if (req.body.campground_name) {
+      const campground_name = req.body.campground_name.toString();
+      console.log(campground_name);
+      const campground_by_name = await Campground.findOne({ name: campground_name }).select('_id');
+      console.log(campground_by_name)
+      req.body = {
+        ...req.body,
+        "campground": campground_by_name._id,
+      };
+      console.log(req.body)
+      req.params.campgroundId = campground_by_name._id;
+    } else {
+      req.params.campgroundId = req.body.campground;
+    }
     const campground = await Campground.findById(req.params.campgroundId);
     if (!campground) {
       return res
-      .status(404)
-      .json({
-        success: false,
-        message: `No campground with the id of ${req.params.campgroundId}`,
-      });
+        .status(404)
+        .json({
+          success: false,
+          message: `No campground with the id of ${req.params.campgroundId}`,
+        });
     }
 
     req.body.user = req.user.id;
+    const existedBookmark = await Bookmark.find(req.body);
+    console.log(existedBookmark.length > 0);
+    if (existedBookmark.length > 0) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `Campground: ${req.body.campground} already existed in your bookmark`,
+        });
+    }
     const bookmark = await Bookmark.create(req.body);
     return res
     .status(200)
