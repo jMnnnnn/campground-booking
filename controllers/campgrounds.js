@@ -1,3 +1,4 @@
+const Bookmark = require("../models/Bookmark");
 const Campground = require("../models/Campground");
 
 exports.getCampgrounds = async (req, res, next) => {
@@ -199,3 +200,107 @@ exports.deleteCampground = async (req, res, next) => {
      });
   }
 };
+
+exports.getBookmarkCampgrounds = async (req, res, next) => {
+  let query;
+  if (req.user.role != "admin") {
+    query = Bookmark.find({ user: req.user.id });
+  } else {
+    query = Bookmark.find();
+  }
+
+  try {
+    const bookmarks = await query;
+    return res
+      .status(200)
+      .json({
+        success: true,
+        count: bookmarks.length,
+        data: bookmarks,
+      })
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error occurred while trying to get bookmark campgrounds"
+      })
+  }
+}
+
+exports.addBookmarkCampground = async (req, res, next) => {
+  try {
+    req.params.campgroundId = req.body.campground;
+    const campground = await Campground.findById(req.params.campgroundId);
+    if (!campground) {
+      return res
+      .status(404)
+      .json({
+        success: false,
+        message: `No campground with the id of ${req.params.campgroundId}`,
+      });
+    }
+
+    req.body.user = req.user.id;
+    const bookmark = await Bookmark.create(req.body);
+    return res
+    .status(200)
+    .json({
+      success: true,
+      data: bookmark,
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: "Error occurred while trying to add a campground to your bookmark",
+      });
+  }
+}
+
+exports.deleteBookmarkCampground = async (req, res, next) => {
+  try {
+    const bookmark = await Bookmark.findById(req.params.id);
+    if (!bookmark) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: `No bookmark with the id of ${req.params.id}`,
+        });
+    }
+
+    if (
+      bookmark.user.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      const user = await User.findById(req.user.id).select("username");
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: `${user.username} is not authorized to remove this bookmark`,
+        });
+    }
+
+    await bookmark.deleteOne();
+    return res
+      .status(200)
+      .json({
+        success: true,
+        data: {},
+        message: 'The bookmark was successfully removed'
+      });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: "Error occurred while trying to delete the booking",
+      });
+  }
+}
