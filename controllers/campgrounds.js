@@ -194,7 +194,7 @@ exports.getBookmarkCampgrounds = async (req, res, next) => {
       })
       .populate({
         path: "user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
   } else {
     query = Bookmark.find()
@@ -204,7 +204,7 @@ exports.getBookmarkCampgrounds = async (req, res, next) => {
       })
       .populate({
         path: "user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
   }
 

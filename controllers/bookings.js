@@ -12,7 +12,7 @@ exports.getBookings = async (req, res, next) => {
       })
       .populate({
         path: "booking_user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
   } else {
     query = Booking.find()
@@ -22,7 +22,7 @@ exports.getBookings = async (req, res, next) => {
       })
       .populate({
         path: "booking_user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
   }
   try {
@@ -50,7 +50,7 @@ exports.getBooking = async (req, res, next) => {
       })
       .populate({
         path: "booking_user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
     if (!booking) {
       return res.status(404).json({
@@ -156,7 +156,7 @@ exports.updateBooking = async (req, res, next) => {
       })
       .populate({
         path: "booking_user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
     console.log(booking);
     if (!booking) {
@@ -213,7 +213,7 @@ exports.updateBooking = async (req, res, next) => {
       })
       .populate({
         path: "booking_user",
-        select: "name telephon_number email username",
+        select: "name telephone_number email username",
       });
     return res.status(200).json({
       success: true,
