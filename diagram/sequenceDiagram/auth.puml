@@ -1,0 +1,133 @@
+@startuml Auth (Register)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Auth (Register)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+participant "<<service>>\n:jwt" as jwt
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+
+
+client->server ++:req.post('/auth/register')
+server->routerAuth ++:app.use('/auth', auth)
+routerAuth -> controllersAuth ++:register
+controllersAuth->modelUser ++:create(req.body)
+modelUser ->UsersDatabase ++:UserSchema
+UsersDatabase --> modelUser --:user
+controllersAuth <-- modelUser --:user
+controllersAuth->controllersAuth ++:sendTokenResponse(user)
+controllersAuth->modelUser ++:getSignedJwtToken()
+modelUser -> jwt ++:sign({ id: this._id }\n, JWT_SECRET)
+modelUser <-- jwt --:token
+controllersAuth <-- modelUser --:token
+controllersAuth->client --:response
+
+@enduml
+
+
+@startuml Auth (Login)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Auth (Login)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+participant "<<service>>\n:bcrypt" as bcrypt
+participant "<<service>>\n:jwt" as jwt
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+
+
+client->server ++:req.post('/auth/login')
+server->routerAuth ++:app.use('/auth', auth)
+routerAuth -> controllersAuth ++:login
+
+alt email !== null
+    controllersAuth->modelUser ++:findOne({ email }).select("+password")
+else
+    controllersAuth->modelUser :findOne({ username }).select("+password")
+end
+
+modelUser ->UsersDatabase ++:UserSchema
+UsersDatabase --> modelUser --:user
+controllersAuth <-- modelUser --:user
+controllersAuth->modelUser ++:matchPassword(password)
+modelUser ->bcrypt ++:compare(password,\nthis.password)
+modelUser <-- bcrypt --:isMatch
+controllersAuth <-- modelUser --:isMatch
+
+alt isMatch
+    controllersAuth->controllersAuth ++:sendTokenResponse(user)
+    controllersAuth->modelUser ++:getSignedJwtToken()
+    modelUser -> jwt ++:sign({ id: this._id }\n, JWT_SECRET)
+    modelUser <-- jwt --:token
+    controllersAuth <-- modelUser --:token
+end
+
+controllersAuth->client --:response
+
+@enduml
+
+
+@startuml Auth (Logout)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Auth (Logout)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+
+client->server ++:req.get('/auth/logout')
+server->routerAuth ++:app.use('/auth', auth)
+routerAuth -> controllersAuth ++:logout
+controllersAuth->client --:response
+
+@enduml
+
+
+@startuml Auth (GetMe)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Auth (GetMe)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<middleware>>\n:auth" as auth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+participant "<<service>>\n:jwt" as jwt
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+client->server ++:req.get('/auth/me')
+server->routerAuth ++:app.use('/auth', auth)
+routerAuth -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerAuth <-- auth --:next()
+routerAuth -> controllersAuth ++:getCurrentUser
+controllersAuth->modelUser ++:findById(req.user.id)
+modelUser ->UsersDatabase ++:UserSchema
+UsersDatabase --> modelUser --:user
+controllersAuth <-- modelUser --:user
+controllersAuth->client --:response
+
+@enduml

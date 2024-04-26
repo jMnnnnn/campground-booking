@@ -1,0 +1,267 @@
+@startuml Manage Booking (GETAll)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Booking (GETAll)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+
+client->server ++:req.get('/bookings')
+server->routerBookings ++:app.use('/bookings',bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerBookings <-- auth --:next()
+routerBookings -> controllersBookings ++:getBookings
+
+alt user.role == admin
+    controllersBookings->modelBooking ++:find()
+else
+    controllersBookings->modelBooking :find({ booking_user: req.user.id })
+end
+
+modelBooking ->BookingsDatabase ++:BookingSchema
+BookingsDatabase --> modelBooking --:bookings
+controllersBookings <-- modelBooking --:bookings
+controllersBookings->client --:response
+
+@enduml
+
+
+@startuml Manage Booking (GETOne)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Booking (GETOne)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+
+client->server ++:req.get('/bookings/:id')
+server->routerBookings ++:app.use('/bookings',bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerBookings <-- auth --:next()
+routerBookings -> controllersBookings ++:getBooking
+controllersBookings->modelBooking ++:findById(req.params.id)
+modelBooking ->BookingsDatabase ++:BookingSchema
+BookingsDatabase --> modelBooking --:booking
+controllersBookings <-- modelBooking --:booking
+
+alt role !== admin && current user !== booking_user._id
+    controllersBookings->modelUser ++:findById(req.user.id).select("username")
+    modelUser ->UsersDatabase ++:UserSchema
+    modelUser <-- UsersDatabase --:user
+    controllersBookings<--modelUser --:user
+end
+
+controllersBookings->client --:response
+
+@enduml
+
+
+@startuml Manage Booking (POST)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Booking (POST)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+
+client->server ++:req.post('/bookings')
+server->routerBookings ++:app.use('/bookings',bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerBookings <-- auth --:next()
+routerBookings -> auth ++:authorize(\n"registered_user", "admin")
+routerBookings <-- auth --:next()
+routerBookings -> controllersBookings ++:addBooking
+
+alt req.body.booked_campground_name !== null
+    controllersBookings->modelCampground ++:findOne({ name: campground_name,} )\n.select("_id")
+    modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+    modelCampground <-- CampgroundsDatabase --:campground_by_name
+    controllersBookings<--modelCampground --:campground_by_name
+end
+
+controllersBookings->modelCampground ++:findById(req.params.campgroundId)
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+modelCampground <-- CampgroundsDatabase --:campground
+controllersBookings<--modelCampground --:campground
+controllersBookings->modelBooking ++:find({ booking_user: req.user.id })
+modelBooking ->BookingsDatabase ++:BookingSchema
+BookingsDatabase --> modelBooking --:existedBookings
+controllersBookings <-- modelBooking --:existedBookings
+
+alt existedBookings.length >= 3 && req.user.role !== "admin"
+    controllersBookings->modelUser ++:findById(req.body.booking_user)\n.select("username");
+    modelUser ->UsersDatabase ++:UserSchema
+    modelUser <-- UsersDatabase --:user
+    controllersBookings<--modelUser --:user
+else
+    controllersBookings->modelBooking ++:create(req.body)
+    modelBooking ->BookingsDatabase ++:BookingSchema
+    BookingsDatabase --> modelBooking --:booking
+    controllersBookings <-- modelBooking --:booking
+end
+controllersBookings->client --:response
+
+@enduml
+
+
+@startuml Manage Booking (UPDATE)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Booking (UPDATE)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+client->server ++:req.put('/bookings/:id')
+server->routerBookings ++:app.use('/bookings',bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerBookings <-- auth --:next()
+routerBookings -> auth ++:authorize(\n"registered_user", "admin")
+routerBookings <-- auth --:next()
+routerBookings -> controllersBookings ++:updateBooking
+controllersBookings->modelBooking ++:findById(req.params.id)
+modelBooking ->BookingsDatabase ++:BookingSchema
+BookingsDatabase --> modelBooking --:booking
+controllersBookings <-- modelBooking --:booking
+
+alt role !== admin && current user !== booking_user._id
+    controllersBookings->modelUser ++:findById(req.user.id).select("username")
+    modelUser ->UsersDatabase ++:UserSchema
+    modelUser <-- UsersDatabase --:user
+    controllersBookings<--modelUser --:user
+
+else
+    controllersBookings->modelBooking ++:validateNights()
+    modelBooking ->BookingsDatabase ++:BookingSchema
+    BookingsDatabase --> modelBooking --:boolean
+    controllersBookings <-- modelBooking --:boolean
+
+    alt nights <= 3
+        controllersBookings->modelBooking ++:findByIdAndUpdate(req.params.id, req.body)
+        modelBooking ->BookingsDatabase ++:BookingSchema
+        BookingsDatabase --> modelBooking --:booking
+        controllersBookings <-- modelBooking --:booking
+    end
+end
+
+controllersBookings->client --:response
+
+@enduml
+
+
+@startuml Manage Booking (DELETE)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Booking (DELETE)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+client->server ++:req.delete('/bookings/:id')
+server->routerBookings ++:app.use('/bookings',bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerBookings <-- auth --:next()
+routerBookings -> auth ++:authorize(\n"registered_user", "admin")
+routerBookings <-- auth --:next()
+routerBookings -> controllersBookings ++:deleteBooking
+controllersBookings->modelBooking ++:findById(req.params.id)
+modelBooking ->BookingsDatabase ++:BookingSchema
+BookingsDatabase --> modelBooking --:booking
+controllersBookings <-- modelBooking --:booking
+
+alt role !== admin && current user !== booking_user._id
+    controllersBookings->modelUser ++:findById(req.user.id).select("username")
+    modelUser ->UsersDatabase ++:UserSchema
+    modelUser <-- UsersDatabase --:user
+    controllersBookings<--modelUser --:user
+
+else
+    controllersBookings->modelBooking ++:booking.deleteOne()
+    modelBooking ->BookingsDatabase ++:BookingSchema
+    BookingsDatabase --> modelBooking --:{}
+    controllersBookings <-- modelBooking --:{}
+end
+
+controllersBookings->client --:response
+
+@enduml

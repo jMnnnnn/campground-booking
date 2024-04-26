@@ -1,0 +1,198 @@
+@startuml Manage Campground (GETAll)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (GETAll)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+
+client->server ++:req.get('/campgrounds')
+server->routerCampgrounds ++:app.use('/campgrounds',campgrounds)
+routerCampgrounds -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> controllersCampgrounds ++:getCampgrounds
+controllersCampgrounds->modelCampground ++:find(queryStr)\n.populate("bookings")
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:campgrounds
+controllersCampgrounds <-- modelCampground --:campgrounds
+controllersCampgrounds->client --:response
+
+@enduml
+
+
+@startuml Manage Campground (GETOne)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (GETOne)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+
+client->server ++:req.get('/campgrounds/:id')
+server->routerCampgrounds ++:app.use('/campgrounds',campgrounds)
+routerCampgrounds -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> controllersCampgrounds ++:getCampground
+controllersCampgrounds->modelCampground ++:findById(req.params.id)\n.populate("bookings")
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:campground
+controllersCampgrounds <-- modelCampground --:campground
+controllersCampgrounds->client --:response
+
+@enduml
+
+
+@startuml Manage Campground (POST)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (POST)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+
+client->server ++:req.post('/campgrounds')
+server->routerCampgrounds ++:app.use('/campgrounds',campgrounds)
+routerCampgrounds -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> auth ++:authorize("admin")
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> controllersCampgrounds ++:createCampground
+controllersCampgrounds->modelCampground ++:create(req.body)
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:campground
+controllersCampgrounds <-- modelCampground --:campground
+controllersCampgrounds->client --:response
+
+@enduml
+
+
+@startuml Manage Campground (UPDATE)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (UPDATE)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+
+client->server ++:req.put('/campgrounds/:id')
+server->routerCampgrounds ++:app.use('/campgrounds',campgrounds)
+routerCampgrounds -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> auth ++:authorize("admin")
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> controllersCampgrounds ++:updateCampground
+controllersCampgrounds->modelCampground ++:findByIdAndUpdate(req.params.id, req.body)\n.populate('bookings')
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:campground
+controllersCampgrounds <-- modelCampground --:campground
+controllersCampgrounds->client --:response
+
+@enduml
+
+
+@startuml Manage Campground (DELETE)
+
+header Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (DELETE)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<model>>\n:User" as modelUser
+participant "<<model>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:users" as UsersDatabase
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+
+client->server ++:req.delete('/campgrounds/:id')
+server->routerCampgrounds ++:app.use('/campgrounds',campgrounds)
+routerCampgrounds -> auth ++:protect()
+auth -> jwt ++:verify(token, JWT_SECRET)
+auth <-- jwt --:decoded
+auth -> modelUser ++:findById(decoded.id)
+modelUser ->UsersDatabase ++:find({_id: decoded.id})
+modelUser <-- UsersDatabase --:user
+auth <-- modelUser --:req.user
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> auth ++:authorize("admin")
+routerCampgrounds <-- auth --:next()
+routerCampgrounds -> controllersCampgrounds ++:deleteCampground
+controllersCampgrounds->modelCampground ++:findById(req.params.id)
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:campground
+controllersCampgrounds <-- modelCampground --:campground
+controllersCampgrounds->modelCampground ++:campground.deleteOne()
+modelCampground ->CampgroundsDatabase ++:CampgroundSchema
+CampgroundsDatabase --> modelCampground --:{}
+controllersCampgrounds <-- modelCampground --:{}
+controllersCampgrounds->client --:response
+
+@enduml
