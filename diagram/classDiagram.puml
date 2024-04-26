@@ -1,0 +1,127 @@
+@startuml
+
+left to right direction
+package "Campground Booking"{
+    class "<<Application>>\nCampgroundBookingService" as CampgroundBookingService{}
+    
+    class "<<Resource>>\nAuth" as ResourceAuth{
+    }
+
+    class "<<Resource>>\nRegister" as ResourceRegister{
+        <<POST>> +register():User
+    }
+
+    class "<<Resource>>\nLogin" as ResourceLogin{
+        <<POST>> +login():User
+    }
+
+    class "<<Resource>>\nLogout" as ResourceLogout{
+        <<GET>> +logout():User
+    }
+
+    class "<<Resource>>\nMe" as ResourceMe{
+        <<GET>> +me():User
+    }
+
+    class "<<Resource>>\nCampground" as ResourceCampgrounds{
+        <<POST>> +createCampground():Campground
+        <<GET>> +getCampgrounds():Campground
+    }
+
+    class "<<Resource>>\nCampground" as ResourceCampground{
+        <<GET>> +getCampground():Campground
+        <<PUT>> +updateCampground():Campground
+        <<DELETE>> +deleteCampground():void
+    }
+
+    class "<<Resource>>\nBooking" as ResourceBookings{
+        <<POST>> +addBooking():Booking
+        <<GET>> +getBookings():Booking
+    }
+
+    class "<<Resource>>\nBooking" as ResourceBooking{
+        <<GET>> +getBooking():Booking
+        <<PUT>> +updateBooking():Booking
+        <<DELETE>> +deleteBooking():void
+    }
+
+    class "<<Resource>>\nBookmark" as ResourceBookmarks{
+        <<POST>> +addBookmarkCampground():Bookmark
+        <<GET>> +getBookmarkCampgrounds():Bookmark
+    }
+
+    class "<<Resource>>\nBookmark" as ResourceBookmark{
+        <<DELETE>> +deleteBookmarkCampground():void
+    }
+
+    class "<<Representation>>\nUser" as User {
+        - id 
+        - name
+        - email
+        - username
+        - password
+        - role
+        - createdAt
+    }
+
+    class "<<Representation>>\nCampground" as Campground {
+      - id
+      - name 
+      - address 
+      - road 
+      - subdistrict 
+      - district 
+      - province 
+      - postalcode 
+      - telephone_number 
+    }
+
+    class "<<Representation>>\nBooking" as Booking {
+      - id
+      - booking_start_date
+      - booking_end_date
+      - booking_user 
+      - booking_campground 
+      - createdAt
+    }
+
+    class "<<Representation>>\nBookmark" as Bookmark {
+      - id
+      - user
+      - campground
+      - createdAt
+    }
+
+}
+
+
+CampgroundBookingService ..> ResourceAuth:"/auth\n<<Path>>"
+
+ResourceAuth ..> ResourceRegister:"/register\n<<Path>>"
+ResourceRegister ..> User:"<<use>>"
+
+ResourceAuth ..> ResourceLogin:"/login\n<<Path>>"
+ResourceLogin ..> User:"<<use>>"
+
+ResourceAuth ..> ResourceLogout:"/logout\n<<Path>>"
+ResourceLogout ..> User:"<<use>>"
+
+ResourceAuth ..> ResourceMe:"/me\n<<Path>>"
+ResourceMe ..> User:"<<use>>"
+
+
+CampgroundBookingService ..> ResourceCampgrounds:"/campgrounds\n<<Path>>"
+ResourceCampgrounds ..> ResourceCampground:"/{campground_id}\n<<Path>>"
+ResourceCampground ..> Campground:"<<use>>"
+
+ResourceCampgrounds ..> ResourceBookmarks:"bookmark\n<<Path>>"
+ResourceBookmarks ..> ResourceBookmark:"{campground_id}\n<<Path>>"
+ResourceBookmark ..> Bookmark:"<<use>>"
+
+CampgroundBookingService ..> ResourceBookings:"/bookings\n<<Path>>"
+ResourceBookings ..> ResourceBooking:"/{booking_id}\n<<Path>>"
+ResourceBooking ..> Booking:"<<use>>"
+
+
+
+@enduml
