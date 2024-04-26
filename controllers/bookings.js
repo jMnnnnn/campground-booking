@@ -89,6 +89,12 @@ exports.addBooking = async (req, res, next) => {
       const campground_by_name = await Campground.findOne({
         name: campground_name,
       }).select("_id");
+      if (!campground_by_name) {
+        return res.status(404).json({
+          success: false,
+          message: `No campground with the name of ${req.body.booked_campground_name}`,
+        });
+      }
       console.log(campground_by_name);
       req.body = {
         ...req.body,
@@ -120,7 +126,7 @@ exports.addBooking = async (req, res, next) => {
     }
 
     const booking = await Booking.create(req.body);
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       data: booking,
     });

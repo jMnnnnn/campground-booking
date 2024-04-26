@@ -1,5 +1,6 @@
 const Bookmark = require("../models/Bookmark");
 const Campground = require("../models/Campground");
+const User = require("../models/User");
 
 exports.getCampgrounds = async (req, res, next) => {
   //   res.status(200).json({ success: true });

@@ -1,0 +1,602 @@
+{
+	"id": "0f9bd18a-ce02-438f-b93f-10cf6de95950",
+	"name": "campground-booking",
+	"timestamp": "2024-04-26T15:09:31.616Z",
+	"collection_id": "32564546-afb96e59-d285-4f2a-a2a5-56aa4d966d9d",
+	"folder_id": 0,
+	"environment_id": "32564546-b71906a0-1868-422d-9ee5-b312256e0c65",
+	"totalPass": 18,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2024-04-26T15:09:27.382Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "eed92e66-beb7-4c83-a8a4-d1d68b82bed0",
+			"name": "UserRegister - Missing Required field",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 15,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "d8062436-67c4-47b4-892e-3194a3c78ba9",
+			"name": "UserRegister - Wrong Email Format",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 7,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "a013c7c4-ffdd-4a69-bd2e-9d3763473e1f",
+			"name": "UserRegister - Wrong Phone Number Format",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "5cb82149-90ab-418b-ad1b-e12689c5ff0b",
+			"name": "UserRegister - Duplicate username",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 206,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				206
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "7b5d6bfc-fed1-4ef0-81be-51c46490a142",
+			"name": "UserRegister - Wrong Password Format",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "09965ac3-623c-4a91-9aed-875edcf30ac9",
+			"name": "UserRegister Correct",
+			"url": "http://localhost:5000/api/v1/auth/register",
+			"time": 211,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				211
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "ef31b8fe-806f-49a7-b60f-693cd9f7434e",
+			"name": "Login",
+			"url": "http://localhost:5000/api/v1/auth/login",
+			"time": 225,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				225
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "670eeecd-6e31-476b-918d-b540e44b8854",
+			"name": "Get all campgrounds",
+			"url": "http://localhost:5000/api/v1/campgrounds",
+			"time": 140,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				140
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "9adb170c-3e8d-4101-934c-5b77bfc8f825",
+			"name": "Add booking more than 3 nights",
+			"url": "http://localhost:5000/api/v1/bookings",
+			"time": 254,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				254
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "a2804709-ee26-4b70-8a79-3208432b0282",
+			"name": "Add booking but no campground",
+			"url": "http://localhost:5000/api/v1/bookings",
+			"time": 79,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status code is 404": true
+			},
+			"testPassFailCounts": {
+				"Status code is 404": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				79
+			],
+			"allTests": [
+				{
+					"Status code is 404": true
+				}
+			]
+		},
+		{
+			"id": "ef5b7cd3-6f1d-4ac8-8456-18c2839dd1e3",
+			"name": "Add one booking",
+			"url": "http://localhost:5000/api/v1/bookings",
+			"time": 181,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				181
+			],
+			"allTests": [
+				{
+					"Status code is 201": true
+				}
+			]
+		},
+		{
+			"id": "ae0a5d58-d90d-49ad-9f56-58af59eb2f72",
+			"name": "Get all bookings",
+			"url": "http://localhost:5000/api/v1/bookings",
+			"time": 107,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				107
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "1b1df930-9d60-4185-959b-2837ab512788",
+			"name": "Update one booking",
+			"url": "http://localhost:5000/api/v1/bookings/662bc3a940871417e85bc6ce",
+			"time": 312,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				312
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "f40d20b9-aa80-4375-bc2d-a016950f4d69",
+			"name": "Delete one booking",
+			"url": "http://localhost:5000/api/v1/bookings/662bc3a940871417e85bc6ce",
+			"time": 153,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				153
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "692ffc6a-ab3e-4a4d-bf5d-7d05b5186b39",
+			"name": "Logout",
+			"url": "http://localhost:5000/api/v1/auth/logout",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				4
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "1f1e193a-37ac-4b18-9f93-13ae0c4a673d",
+			"name": "Admin Login",
+			"url": "http://localhost:5000/api/v1/auth/login",
+			"time": 164,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				164
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "b22e1076-a116-4e3e-908a-b5b9c8199e6d",
+			"name": "Admin GET",
+			"url": "http://localhost:5000/api/v1/bookings",
+			"time": 128,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				128
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "8508ecff-b22c-4bdf-9a5e-a04fd4889608",
+			"name": "ADMIN Update",
+			"url": "http://localhost:5000/api/v1/bookings/661d41571221a3a90a3810f6",
+			"time": 211,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				211
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "c50f85a0-4b6b-439f-8d80-31031eafb763",
+			"name": "Admin DELETE",
+			"url": "http://localhost:5000/api/v1/bookings/661d41571221a3a90a3810f6",
+			"time": 118,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				118
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 2527,
+	"collection": {
+		"requests": [
+			{
+				"id": "eed92e66-beb7-4c83-a8a4-d1d68b82bed0",
+				"method": "POST"
+			},
+			{
+				"id": "d8062436-67c4-47b4-892e-3194a3c78ba9",
+				"method": "POST"
+			},
+			{
+				"id": "a013c7c4-ffdd-4a69-bd2e-9d3763473e1f",
+				"method": "POST"
+			},
+			{
+				"id": "5cb82149-90ab-418b-ad1b-e12689c5ff0b",
+				"method": "POST"
+			},
+			{
+				"id": "7b5d6bfc-fed1-4ef0-81be-51c46490a142",
+				"method": "POST"
+			},
+			{
+				"id": "09965ac3-623c-4a91-9aed-875edcf30ac9",
+				"method": "POST"
+			},
+			{
+				"id": "ef31b8fe-806f-49a7-b60f-693cd9f7434e",
+				"method": "POST"
+			},
+			{
+				"id": "670eeecd-6e31-476b-918d-b540e44b8854",
+				"method": "GET"
+			},
+			{
+				"id": "9adb170c-3e8d-4101-934c-5b77bfc8f825",
+				"method": "POST"
+			},
+			{
+				"id": "a2804709-ee26-4b70-8a79-3208432b0282",
+				"method": "POST"
+			},
+			{
+				"id": "ef5b7cd3-6f1d-4ac8-8456-18c2839dd1e3",
+				"method": "POST"
+			},
+			{
+				"id": "ae0a5d58-d90d-49ad-9f56-58af59eb2f72",
+				"method": "GET"
+			},
+			{
+				"id": "1b1df930-9d60-4185-959b-2837ab512788",
+				"method": "PUT"
+			},
+			{
+				"id": "f40d20b9-aa80-4375-bc2d-a016950f4d69",
+				"method": "DELETE"
+			},
+			{
+				"id": "692ffc6a-ab3e-4a4d-bf5d-7d05b5186b39",
+				"method": "GET"
+			},
+			{
+				"id": "1f1e193a-37ac-4b18-9f93-13ae0c4a673d",
+				"method": "POST"
+			},
+			{
+				"id": "b22e1076-a116-4e3e-908a-b5b9c8199e6d",
+				"method": "GET"
+			},
+			{
+				"id": "8508ecff-b22c-4bdf-9a5e-a04fd4889608",
+				"method": "PUT"
+			},
+			{
+				"id": "c50f85a0-4b6b-439f-8d80-31031eafb763",
+				"method": "DELETE"
+			}
+		]
+	}
+}
