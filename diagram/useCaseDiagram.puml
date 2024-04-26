@@ -2,66 +2,89 @@
 
 left to right direction
 
-rectangle "Campground Booking" {
-  usecase "Register" as register
-  usecase "Log In" as login
-  usecase "Log Out" as logout
-  
+
+package "Auth" {
+  rectangle "Auth" {
+    usecase "Register" as register
+    usecase "Log In" as login
+    usecase "Log Out" as logout
+    usecase "Get Me" as getMe
+}
+
+actor "Registered_User" as auth_user 
+auth_user -- register
+auth_user -- login
+auth_user -- logout
+auth_user -- getMe
+
+actor "Admin" as auth_admin
+register -- auth_admin
+login -- auth_admin
+logout -- auth_admin
+getMe -- auth_admin
+}
+
+package "Booking" {
+  rectangle "Booking" {
   usecase "Add\nBooking" as addBooking
   usecase "Get All\nBookings" as getAllBooking
   usecase "Get\nBooking" as getBooking
   usecase "update\nBooking" as updateBooking
   usecase "delete\nBooking" as deleteBooking
+}
 
+actor "Registered_User" as booking_user 
+booking_user -- addBooking
+booking_user -- getAllBooking
+booking_user -- getBooking
+booking_user -- updateBooking
+booking_user -- deleteBooking
+
+actor "Admin" as booking_admin
+addBooking -- booking_admin
+getAllBooking -- booking_admin
+getBooking -- booking_admin
+updateBooking -- booking_admin
+deleteBooking -- booking_admin
+}
+
+package "Campground" {
+  rectangle "Campground" {
   usecase "Add\nCampground" as addCampground
   usecase "Get All\nCampgrounds" as getAllCampground
   usecase "Get\nCampground" as getCampground
   usecase "update\nCampground" as updateCampground
   usecase "delete\nCampground" as deleteCampground
+}
 
+actor "Registered_User" as campground_user 
+campground_user -- getAllCampground
+campground_user -- getCampground
+
+actor "Admin" as campground_admin
+addCampground -- campground_admin
+getAllCampground -- campground_admin
+getCampground -- campground_admin
+updateCampground -- campground_admin
+deleteCampground -- campground_admin
+}
+
+package "Bookmark" {
+  rectangle "Bookmark" {
   usecase "Get Bookmark\nCampgrounds" as getBookmarkCampground
   usecase "Add Bookmark\nCampground" as addBookmarkCampground
   usecase "Delete Bookmark\nCampground" as deleteBookmarkCampground
-
 }
 
-actor "Registered_User" as registered_user 
-registered_user -- register
-registered_user -- login
-registered_user -- logout
+actor "Registered_User" as bookmark_user 
+bookmark_user -- getBookmarkCampground
+bookmark_user -- addBookmarkCampground
+bookmark_user -- deleteBookmarkCampground
 
-registered_user -- addBooking
-registered_user -- getAllBooking
-registered_user -- getBooking
-registered_user -- updateBooking
-registered_user -- deleteBooking
-
-registered_user -- getAllCampground
-registered_user -- getCampground
-
-registered_user -- getBookmarkCampground
-registered_user -- addBookmarkCampground
-registered_user -- deleteBookmarkCampground
-
-actor "Admin" as admin
-register -- admin
-login -- admin
-logout -- admin
-
-addBooking -- admin
-getAllBooking -- admin
-getBooking -- admin
-updateBooking -- admin
-deleteBooking -- admin
-
-addCampground -- admin
-getAllCampground -- admin
-getCampground -- admin
-updateCampground -- admin
-deleteCampground -- admin
-
-getBookmarkCampground -- admin
-addBookmarkCampground -- admin
-deleteBookmarkCampground -- admin
+actor "Admin" as bookmark_admin
+getBookmarkCampground -- bookmark_admin
+addBookmarkCampground -- bookmark_admin
+deleteBookmarkCampground -- bookmark_admin
+}
 
 @enduml
